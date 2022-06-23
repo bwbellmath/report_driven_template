@@ -68,15 +68,20 @@ Script where your experiment is performed
 ##  `project.tex`
 LaTeX document that is *produced* by project.py and stored in git for
 reuse later. 
+
 ##  `latex_header.tex`
 Header for your latex document -- preconfigured with everything you
 need (and way more...)
 
 ##  `project.pdf`
-PDF file created for `project.tex` stored in git for convenience
+PDF file created for `project.tex` stored in git for convenience. Much
+cleaner representation of your report that you can print on paper to
+turn in or submit for courses, conferences, or journals
 
 ##  `project.md`
-Markdown formatted output for your 
+Markdown formatted output for your report -- this can be viewed
+through your web-browser on github and you can share this link with
+people as the most up-to-date version of your report. 
 
 ##  `utils/utils.py`
 File where functions that are shared among multiple experiment scripts

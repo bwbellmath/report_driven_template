@@ -9,15 +9,15 @@ sha = repo.head.object.hexsha
 origin_url = repo.remotes["origin"].url
 
 
-# summary.md generator
+# updated summary.md generator -- old is now legacy!
 class Report(object):
-  def __init__(self, fo_md, fo_tex):
+  def __init__(self, fo_md, fo_tex, first=True):
     self.fo_md = fo_md
     self.fo_tex = fo_tex
-    self.first = True
+    self.first = first
     # read header file from repo
   
-    with open("latex_header.tex", "r") as file_header:
+    with open("utils/latex_header.tex", "r") as file_header:
       self.header = file_header.readlines()
 
 
@@ -26,16 +26,23 @@ class Report(object):
     print("{}\n".format(desc))
     if (self.first):
       desc_head = self.header
-      print("{}\n".format(desc_md), file=open(self.fo_md,"w"))
       # make sure header is written first to latex file
       with open(self.fo_tex, "w") as f:
         f.writelines(desc_head)
+        f.writelines(["\n"])
       #print("{}\n".format(desc_head), file=open(self.fo_tex,"w"))
+      print("{}\n".format(desc_md), file=open(self.fo_md,"w"))
       print("{}\n".format(desc_tex), file=open(self.fo_tex,"a"))
       self.first = False
     else:
       print("{}\n".format(desc_md), file=open(self.fo_md,"a"))
       print("{}\n".format(desc_tex), file=open(self.fo_tex,"a"))
+
+  def w_chapter(self, line):
+    desc = line
+    desc_md = "# {}".format(line)
+    desc_tex = "\chapter{{ {} }}".format(line)
+    self.summary_print(desc, desc_md, desc_tex)
 
   def w_section(self, line):
     desc = line
@@ -55,6 +62,16 @@ class Report(object):
     desc_tex = "\\ \n \subsubsection{{ {} }}".format(line)
     self.summary_print(desc, desc_md, desc_tex)
 
+  def w_list(self, lines):
+    desc = ""
+    desc_tex = "\begin{enumerate}[1.] \n"
+    desc_md = ""
+    for l in lines:
+      desc = desc+F"> {l} \n"
+      desc_tex = desc_tex+F"\item {l} \n"
+      desc_md = desc_md+F"1. {l} \n"
+    self.summary_print(desc, desc_md, desc_tex)
+
   def w_lines(self, line):
     desc = line
     desc_md = line
@@ -65,7 +82,7 @@ class Report(object):
     # get url from git remote origin
     url = origin_url[0:-4]+"/blob/main/"
 
-    desc = "{} \n Image URL : {}{}\n Image DIR : {}".format(line, url, f_img, f_img)
+    desc = "{} \n Image URL : {}{}\n Image DIR : {} \n".format(line, url, f_img, f_img)
     desc_md = desc + "![{}]({}{})".format(f_img, url, f_img)
     desc_tex = "\includegraphics[width=0.9\\textwidth]{{{}}}".format(f_img)
     self.summary_print(desc, desc_md, desc_tex)
@@ -79,4 +96,5 @@ class Report(object):
   def w_tail(self):
     tail = "\end{document}"
     print(tail, file=open(self.fo_tex,"a"))
+
 
